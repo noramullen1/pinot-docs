@@ -38,41 +38,25 @@ The schema defines the fields along with their data types. The schema also defin
 
 For our sample data, the schema configuration looks like this:
 
-{% code title="/tmp/pinot-quick-start/transcript-schema.json" %}
+{% code title="/tmp/pinot/schema-stream.json" %}
 ```bash
 {
-  "schemaName": "transcript",
+  "schemaName": "events",
   "dimensionFieldSpecs": [
     {
-      "name": "studentID",
-      "dataType": "INT"
-    },
-    {
-      "name": "firstName",
-      "dataType": "STRING"
-    },
-    {
-      "name": "lastName",
-      "dataType": "STRING"
-    },
-    {
-      "name": "gender",
-      "dataType": "STRING"
-    },
-    {
-      "name": "subject",
+      "name": "uuid",
       "dataType": "STRING"
     }
   ],
   "metricFieldSpecs": [
     {
-      "name": "score",
-      "dataType": "FLOAT"
+      "name": "count",
+      "dataType": "INT"
     }
   ],
   "dateTimeFieldSpecs": [{
-    "name": "timestamp",
-    "dataType": "LONG",
+    "name": "ts",
+    "dataType": "TIMESTAMP",
     "format" : "1:MILLISECONDS:EPOCH",
     "granularity": "1:MILLISECONDS"
   }]
