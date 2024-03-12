@@ -74,56 +74,61 @@ The table configuration contains an ingestion configuration (`ingestionConfig`),
 
 For our sample data and schema, the table config will look like this:
 
-{% code title="/tmp/pinot/table-config.json" %}
+{% code title="/tmp/pinot/table-config-stream.json" %}
 ```bash
 {
-  "tableName": "exams",
-  "segmentsConfig" : {
-    "timeColumnName": "timestampInEpoch",
-    "timeType": "MILLISECONDS",
-    "replication" : "1",
-    "schemaName" : "transcript"
+  "tableName": "events",
+  "tableType": "REALTIME",
+  "segmentsConfig": {
+    "timeColumnName": "ts",
+    "schemaName": "events",
+    "replicasPerPartition": "1"
   },
-  "tableIndexConfig" : {
-    "invertedIndexColumns" : [],
-    "loadMode"  : "MMAP"
+  "tenants": {},
+  "tableIndexConfig": {
+    "loadMode": "MMAP",
+    "streamConfigs": {
+      "streamType": "kafka",
+      "stream.kafka.consumer.type": "lowlevel",
+      "stream.kafka.topic.name": "events",
+      "stream.kafka.decoder.class.name": "org.apache.pinot.plugin.stream.kafka.KafkaJSONMessageDecoder",
+      "stream.kafka.consumer.factory.class.name": "org.apache.pinot.plugin.stream.kafka20.KafkaConsumerFactory",
+      "stream.kafka.broker.list": "kafka:9092",
+      "realtime.segment.flush.threshold.rows": "0",
+      "realtime.segment.flush.threshold.time": "24h",
+      "realtime.segment.flush.threshold.segment.size": "50M",
+      "stream.kafka.consumer.prop.auto.offset.reset": "smallest"
+    }
   },
-  "tenants" : {
-    "broker":"DefaultTenant",
-    "server":"DefaultTenant"
-  },
-  "tableType":"OFFLINE",
-  "metadata": {}
-}
+  "metadata": {
+    "customConfigs": {}
+  }
 }
 ```
 
-## Upload schema and table config
+## Create schema and table 
 
-Now that we have our table and schema configurations, let's upload them to the Pinot cluster. As soon as the configs are uploaded, Pinot will start ingesting available records from the topic.
+Now that we have our table and schema configurations, let's upload them to the Pinot cluster to create the schema and table. As soon as the configs are uploaded, Pinot will start ingesting available records from the topic.
 
 {% tabs %}
 {% tab title="Docker" %}
 ```
-docker run \
-    --network=pinot-demo \
-    -v /tmp/pinot-quick-start:/tmp/pinot-quick-start \
-    --name pinot-streaming-table-creation \
-    apachepinot/pinot:latest AddTable \
-    -schemaFile /tmp/pinot-quick-start/transcript-schema.json \
-    -tableConfigFile /tmp/pinot-quick-start/transcript-table-realtime.json \
-    -controllerHost pinot-quickstart \
-    -controllerPort 9000 \
-    -exec
+docker run --rm -ti \
+        --network=pinot-demo \
+        -v /tmp/pinot:/tmp/pinot \
+        apachepinot/pinot:1.0.0 AddSchema \
+        -schemaFile /tmp/pinot/schema-stream.json \
+        -tableConfigFile /tmp/pinot/table-config-stream.json \
+        -controllerHost pinot-controller \
+        -controllerPort 9000 -exec
 ```
 {% endtab %}
 
 {% tab title="Launcher Script" %}
 ```bash
 bin/pinot-admin.sh AddTable \
-    -schemaFile /path/to/transcript-schema.json \
-    -tableConfigFile /path/to/transcript-table-realtime.json \
-    -exec
+    -schemaFile /tmp/pinot/schema-stream.json \
+    -tableConfigFile /tmp/pinot/table-config-stream.json \
 ```
 {% endtab %}
 {% endtabs %}

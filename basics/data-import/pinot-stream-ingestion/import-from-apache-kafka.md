@@ -81,15 +81,14 @@ You can set the offset to -
 
 The resulting configuration should look as follows -
 
-{% code title="/tmp/pinot-quick-start/transcript-table-realtime.json" %}
-```css
- {
-  "tableName": "transcript",
+{% code title="/tmp/pinot/table-config-stream.json" %}
+````bash
+{
+  "tableName": "events",
   "tableType": "REALTIME",
   "segmentsConfig": {
-    "timeColumnName": "timestamp",
-    "timeType": "MILLISECONDS",
-    "schemaName": "transcript",
+    "timeColumnName": "ts",
+    "schemaName": "events",
     "replicasPerPartition": "1"
   },
   "tenants": {},
@@ -98,12 +97,13 @@ The resulting configuration should look as follows -
     "streamConfigs": {
       "streamType": "kafka",
       "stream.kafka.consumer.type": "lowlevel",
-      "stream.kafka.topic.name": "transcript-topic",
+      "stream.kafka.topic.name": "events",
       "stream.kafka.decoder.class.name": "org.apache.pinot.plugin.stream.kafka.KafkaJSONMessageDecoder",
       "stream.kafka.consumer.factory.class.name": "org.apache.pinot.plugin.stream.kafka20.KafkaConsumerFactory",
       "stream.kafka.broker.list": "kafka:9092",
-      "realtime.segment.flush.threshold.time": "3600000",
-      "realtime.segment.flush.threshold.rows": "50000",
+      "realtime.segment.flush.threshold.rows": "0",
+      "realtime.segment.flush.threshold.time": "24h",
+      "realtime.segment.flush.threshold.segment.size": "50M",
       "stream.kafka.consumer.prop.auto.offset.reset": "smallest"
     }
   },
