@@ -74,50 +74,27 @@ The table configuration contains an ingestion configuration (`ingestionConfig`),
 
 For our sample data and schema, the table config will look like this:
 
-```json
+{% code title="/tmp/pinot/table-config.json" %}
+```bash
 {
-  "tableName": "transcript",
-  "tableType": "REALTIME",
-  "segmentsConfig": {
-    "timeColumnName": "timestamp",
+  "tableName": "exams",
+  "segmentsConfig" : {
+    "timeColumnName": "timestampInEpoch",
     "timeType": "MILLISECONDS",
-    "schemaName": "transcript",
-    "replicasPerPartition": "1"
+    "replication" : "1",
+    "schemaName" : "transcript"
   },
-  "tenants": {},
-  "tableIndexConfig": {
-    "loadMode": "MMAP",
+  "tableIndexConfig" : {
+    "invertedIndexColumns" : [],
+    "loadMode"  : "MMAP"
   },
-  "metadata": {
-    "customConfigs": {}
+  "tenants" : {
+    "broker":"DefaultTenant",
+    "server":"DefaultTenant"
   },
-  "ingestionConfig": {
-    "streamIngestionConfig": {
-        "streamConfigMaps": [
-          {
-            "realtime.segment.flush.threshold.rows": "0",
-            "stream.kafka.decoder.prop.format": "JSON",
-            "key.serializer": "org.apache.kafka.common.serialization.ByteArraySerializer",
-            "stream.kafka.decoder.class.name": "org.apache.pinot.plugin.stream.kafka.KafkaJSONMessageDecoder",
-            "streamType": "kafka",
-            "value.serializer": "org.apache.kafka.common.serialization.ByteArraySerializer",
-            "stream.kafka.consumer.type": "LOWLEVEL",
-            "realtime.segment.flush.threshold.segment.rows": "50000",
-            "stream.kafka.broker.list": "localhost:9876",
-            "realtime.segment.flush.threshold.time": "3600000",
-            "stream.kafka.consumer.factory.class.name": "org.apache.pinot.plugin.stream.kafka20.KafkaConsumerFactory",
-            "stream.kafka.consumer.prop.auto.offset.reset": "smallest",
-            "stream.kafka.topic.name": "transcript-topic"
-          }
-        ]
-      },
-      "transformConfigs": [],
-      "continueOnError": true,
-      "rowTimeValueCheck": true,
-      "segmentTimeValueCheck": false
-    },
-    "isDimTable": false
-  }
+  "tableType":"OFFLINE",
+  "metadata": {}
+}
 }
 ```
 
