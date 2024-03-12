@@ -41,7 +41,7 @@ docker exec \
 
 Start Kafka cluster on port `9092` using the same Zookeeper from the [quick-start examples](../../getting-started/running-pinot-in-docker.md).
 
-```
+```bash
 bin/pinot-admin.sh  StartKafka -zkAddress=localhost:2181/kafka -port 9092
 ```
 
@@ -49,7 +49,7 @@ bin/pinot-admin.sh  StartKafka -zkAddress=localhost:2181/kafka -port 9092
 
 Download the latest [Kafka](https://kafka.apache.org/quickstart#quickstart\_download). Create a topic.
 
-```css
+```bash
 bin/kafka-topics.sh --create --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1 --topic transcript-topic
 ```
 {% endtab %}
