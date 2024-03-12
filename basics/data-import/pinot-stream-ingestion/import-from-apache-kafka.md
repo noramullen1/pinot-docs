@@ -8,7 +8,7 @@ description: >-
 
 In this page, you'll learn how to import data into Pinot using Apache Kafka for real-time stream ingestion. Pinot has out-of-the-box real-time ingestion support for Kafka.
 
-Let's set up a demo Kafka cluster locally, and create a sample topic `transcript-topic`
+Let's set up a demo Kafka cluster locally, and create a sample topic `events`.
 
 {% tabs %}
 {% tab title="Docker" %}
@@ -79,10 +79,10 @@ You can set the offset to -
 * `timestamp in format yyyy-MM-dd'T'HH:mm:ss.SSSZ` to start the consumer from the offset after the timestamp.
 * `datetime duration or period` to start the consumer from the offset after the period eg., '2d'.
 
-The resulting configuration should look as follows -
+Create a file called `/tmp/pinot/table-config-stream.json`
 
 {% code title="/tmp/pinot/table-config-stream.json" %}
-````bash
+````json
 {
   "tableName": "events",
   "tableType": "REALTIME",
@@ -148,7 +148,7 @@ bin/pinot-admin.sh AddTable \
 
 We will publish data in the following format to Kafka. Let us save the data in a file named as `transcript.json`.
 
-{% code title="transcript.json" %}
+{% code title="events.json" %}
 ```css
 {"studentID":205,"firstName":"Natalie","lastName":"Jones","gender":"Female","subject":"Maths","score":3.8,"timestamp":1571900400000}
 {"studentID":205,"firstName":"Natalie","lastName":"Jones","gender":"Female","subject":"History","score":3.5,"timestamp":1571900400000}
@@ -165,9 +165,9 @@ We will publish data in the following format to Kafka. Let us save the data in a
 ```
 {% endcode %}
 
-Push sample JSON into the `transcript-topic` Kafka topic, using the Kafka console producer. This will add 12 records to the topic described in the `transcript.json` file.
+Push sample JSON into the `events` Kafka topic, using the Kafka console producer. This will add 12 records to the topic described in the `transcript.json` file.
 
-Checkin Kafka docker container
+Check in Kafka Docker container
 
 ```bash
 docker exec -ti kafka bash
@@ -178,7 +178,7 @@ Publish messages to the target topic
 ```bash
 bin/kafka-console-producer.sh \
     --broker-list localhost:9092 \
-    --topic transcript-topic < transcript.json
+    --topic events;
 ```
 
 ### Query the table
